@@ -37,7 +37,19 @@ export async function sendCommand(request: Request): Promise<Response> {
         return {
           id: request.id,
           success: false,
-          error: "扩展未连接",
+          error: [
+            "Chrome extension not connected.",
+            "",
+            "Setup guide:",
+            "  1. Install:  npm install -g bb-browser",
+            "  2. Open:     chrome://extensions/ → Enable Developer Mode",
+            "  3. Load:     Click \"Load unpacked\" → select node_modules/bb-browser/extension/",
+            "  4. Start:    bb-browser daemon",
+            "  5. Verify:   bb-browser status",
+            "",
+            "Or download the extension from:",
+            "  https://github.com/epiral/bb-browser/releases",
+          ].join("\n"),
         };
       }
       return {
@@ -64,7 +76,15 @@ export async function sendCommand(request: Request): Promise<Response> {
         error.message.includes("fetch failed") ||
         error.message.includes("ECONNREFUSED")
       ) {
-        throw new Error("无法连接到 Daemon，请确保 Daemon 正在运行");
+        throw new Error([
+          "Cannot connect to daemon.",
+          "",
+          "Start the daemon first:",
+          "  bb-browser daemon",
+          "",
+          "Then load the Chrome extension:",
+          "  chrome://extensions/ → Developer Mode → Load unpacked → node_modules/bb-browser/extension/",
+        ].join("\n"));
       }
       throw error;
     }

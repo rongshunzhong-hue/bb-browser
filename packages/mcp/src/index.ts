@@ -4,6 +4,15 @@ import { DAEMON_BASE_URL, COMMAND_TIMEOUT, generateId } from "@bb-browser/shared
 import type { Request, Response } from "@bb-browser/shared";
 import { z } from "zod";
 
+const SETUP_HINT = [
+  "",
+  "Setup: 1) npm install -g bb-browser",
+  "       2) chrome://extensions/ → Developer Mode → Load unpacked → node_modules/bb-browser/extension/",
+  "       3) bb-browser daemon",
+  "       4) bb-browser status",
+  "Releases: https://github.com/epiral/bb-browser/releases",
+].join("\n");
+
 async function sendCommand(request: Request): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), COMMAND_TIMEOUT);
@@ -15,10 +24,13 @@ async function sendCommand(request: Request): Promise<Response> {
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
+    if (response.status === 503) {
+      return { id: request.id, success: false, error: "Chrome extension not connected." + SETUP_HINT };
+    }
     return (await response.json()) as Response;
   } catch {
     clearTimeout(timeoutId);
-    return { id: request.id, success: false, error: "Cannot connect to daemon" };
+    return { id: request.id, success: false, error: "Cannot connect to daemon. Is it running? Run: bb-browser daemon" + SETUP_HINT };
   }
 }
 
