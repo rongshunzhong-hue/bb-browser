@@ -89,10 +89,28 @@ async function runCommand(request: Omit<Request, "id">) {
   return sendCommand({ id: generateId(), ...request });
 }
 
-const server = new McpServer({
-  name: "bb-browser",
-  version: "0.4.0",
-});
+const server = new McpServer(
+  { name: "bb-browser", version: "0.4.0" },
+  { instructions: `bb-browser lets you control the user's real Chrome browser — with their login state, cookies, and sessions.
+
+Your browser is the API. No headless browser, no cookie extraction, no anti-bot bypass.
+
+Key capabilities:
+- browser_snapshot: Read page content via accessibility tree (use ref numbers to interact)
+- browser_click/fill/type: Interact with elements by ref from snapshot
+- browser_eval: Run JavaScript in page context (most powerful — full DOM/fetch access)
+- browser_network: Capture network requests/responses (API reverse engineering)
+- browser_screenshot: Visual page capture
+- browser_tab_list/tab_new: Multi-tab support — use tab parameter for concurrent operations
+
+Site adapters (pre-built commands for popular sites):
+- Run via CLI: bb-browser site <name> [args]
+- Available: reddit, twitter, github, hackernews, xiaohongshu, zhihu, bilibili, weibo, douban, youtube
+- Update: bb-browser site update
+- List all: bb-browser site list
+
+To create a new site adapter, run: bb-browser guide` },
+);
 
 server.tool(
   "browser_snapshot",

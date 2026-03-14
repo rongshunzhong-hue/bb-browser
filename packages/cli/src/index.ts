@@ -603,6 +603,56 @@ async function main(): Promise<void> {
         break;
       }
 
+      case "guide": {
+        console.log(`How to turn any website into a bb-browser site adapter
+=======================================================
+
+1. REVERSE ENGINEER the API
+   bb-browser network clear --tab <tabId>
+   bb-browser refresh --tab <tabId>
+   bb-browser network requests --filter "api" --with-body --json --tab <tabId>
+
+2. TEST if direct fetch works (Tier 1)
+   bb-browser eval "fetch('/api/endpoint',{credentials:'include'}).then(r=>r.json())" --tab <tabId>
+
+   If it works → Tier 1 (Cookie auth, like Reddit/GitHub/Zhihu/Bilibili)
+   If needs extra headers → Tier 2 (like Twitter: Bearer + CSRF token)
+   If needs request signing → Tier 3 (like Xiaohongshu: Pinia store actions)
+
+3. WRITE the adapter (one JS file per operation)
+
+   /* @meta
+   {
+     "name": "platform/command",
+     "description": "What it does",
+     "domain": "www.example.com",
+     "args": { "query": {"required": true, "description": "Search query"} },
+     "readOnly": true,
+     "example": "bb-browser site platform/command value"
+   }
+   */
+   async function(args) {
+     if (!args.query) return {error: 'Missing argument: query'};
+     const resp = await fetch('/api/search?q=' + encodeURIComponent(args.query), {credentials: 'include'});
+     if (!resp.ok) return {error: 'HTTP ' + resp.status, hint: 'Not logged in?'};
+     return await resp.json();
+   }
+
+4. TEST it
+   Save to ~/.bb-browser/sites/platform/command.js (private, takes priority)
+   bb-browser site platform/command "test query" --json
+
+5. CONTRIBUTE
+   Clone: git clone https://github.com/epiral/bb-sites
+   Add:   bb-sites/platform/command.js
+   PR:    gh pr create --repo epiral/bb-sites
+
+Private adapters:  ~/.bb-browser/sites/<platform>/<command>.js
+Community:         ~/.bb-browser/bb-sites/ (via bb-browser site update)
+Full guide:        https://github.com/epiral/bb-sites/blob/main/SKILL.md`);
+        break;
+      }
+
       default: {
         console.error(`错误：未知命令 "${parsed.command}"`);
         console.error("运行 bb-browser --help 查看可用命令");
