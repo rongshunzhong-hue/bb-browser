@@ -1,5 +1,5 @@
 ---
-name: bb-browser-sites
+name: bb-browser-openclaw
 description: Turn any website into a CLI command. 36 platforms, 103 commands — Twitter, Reddit, GitHub, YouTube, Zhihu, Bilibili, Weibo, and more. Uses OpenClaw's browser directly, no extra extension needed.
 requires:
   bins: bb-browser
