@@ -1,6 +1,6 @@
 <div align="center">
 
-# bb-browser
+# my-badboy-browser 
 
 ### 坏孩子浏览器 BadBoy Browser
 
